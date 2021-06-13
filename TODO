@@ -1,14 +1,19 @@
 
 
-TODO:
-dailyPostCheck                (not started)
-getNewUsers                   (EViLeleven)
-generateFallenList            (needs work)
-generateRecapPost             (text formatting)
-
-
+TODO:                                           I (seco-nunesap):                       (TL;DR: It's all ready to use.)
+dailyPostCheck                (not started)     -changed some function names because my IDE pressured me to. No offense.
+getNewUsers                   (EViLeleven)      -objects in the user_list should have an integer instead of making it
+generateFallenList            (needs work)          hold dates and activity as strings. So we can have a simpler ranking
+generateRecapPost             (text formatting)     algorithm.
+                                                -we should make main.py run once in a week and manually instead of
+                                                    hosting it to sleep for 24 hours each day.
+                                                -algorithms I've used for randomly finding new users and adjusting ranks
+                                                    are open to change, see them in botUtils.py.
 DONE:
 readUserList                  (done)
-addUsers                      (done)
-removeFallen                  (done)
-updateUsers                   (done)
+addUsers                      (done)            -I don't see how these two work? I only see a print statement followed
+removeFallen                  (done)                by comments. I am sorry If I've deleted something important just
+updateUsers                   (done)                because I do not understand(which I ocassionally do), I just
+                                                    couldn't work with what is done. You have the option to not to
+                                                    merge, it wont upset me.
+

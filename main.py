@@ -1,57 +1,28 @@
 from botUtils import *
 import praw
-def runBotScript():
-    run = True
-    # count number of days
-    recapCount = 1
+import constant
+
+
+# I have vastly changed and simplified the main structure. -seco
+# edit constant.py to reuse.
+def recap():
 
     reddit = praw.Reddit(
-            client_id='**********',
-            client_secret='**********',
-            username='**********',
-            password='**********!',
-            user_agent='**********'
-    )
+        client_id=constant.CLIENT_ID,
+        client_secret=constant.CLIENT_SECRET,
+        user_agent=constant.USER_AGENT,
+        username=constant.USERNAME,
+        password=constant.PASSWORD, )
+    reddit.subreddit(constant.TARGET_SUBREDDIT).contributor.add("seco-nunesap")
+    users = read_user_list()
 
-    while run:
+    adjust_ranks(reddit.subreddit(constant.TARGET_SUBREDDIT), users)
+    fallen = remove_fallen(reddit.subreddit(constant.TARGET_SUBREDDIT), users)
+    news = add_users(reddit)
 
-        currentUserList = readUserList()
-
-
-        dailyPostCheck(currentUserList)
-
-
-
-        # once weekly run this
-        if( recapCount == 7):
-            # find new users and add them to the list and
-            newUsers = getNewUsers(currentUserList)
-
-            #approveNewUsers
-            addUsers(newUsers,reddit)
-
-            # find existing members and remove them for inactivity
-            fallenList = generateFallenList(currentUserList)
-
-            #remove fallenUsers from approval list
-            removeFallen(fallenList,reddit)
-
-            # generate recap post with new members and fallen
-            generateRecapPost(newUsers, fallenList,reddit)
-
-            #update the userList and save
-            updateUsers(currentUserList,newUsers,fallenList)
-
-
-            count = 0
-            run = False
-        # increment day count by
-        recapCount+=1
-
-        # TODO: add sleep function for 24 hrs
-
-
+    generate_recap_post(news, fallen, reddit)
+    update_users(users, news, fallen)
 
 
 if __name__ == '__main__':
-    runBotScript()
+    recap()
