@@ -5,3 +5,4 @@ Adds random users,\
 Kicks inactive users depending on their ranks,\
 posts a recap about it.
 ### We know this is done before, we just wanted to make one our own.
+## If You are an ex-ClubFuture member and we have decided get this bot running, dm me for information like password etc.
