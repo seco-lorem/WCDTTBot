@@ -3,8 +3,16 @@ from datetime import date
 import constant
 
 
+def read_do_not_add_list():
+    print('read_do_not_add_list')
+    with open('./do_not_add_again.json') as f:
+        user_list = json.load(f)
+    f.close()
+    return user_list
+
+
 def read_user_list():
-    print('readUserList')
+    print('read_user_list')
     with open('./userList.json') as f:
         userList = json.load(f)
     f.close()
@@ -12,6 +20,7 @@ def read_user_list():
 
 
 def update_users(user_list, newUsers, fallenList):
+    print("update_users")
     for user in fallenList:
         del user_list[user]
     for user in newUsers:
@@ -24,17 +33,18 @@ def update_users(user_list, newUsers, fallenList):
 
 
 def generate_recap_post(newUsers, fallenList, reddit):
+    print("generate_recap_post")
     today = date.today()
     title = "Recap: " + str(today)
     body = '#Weekly recap post.\n---------------------\n#New members\n'
     for user in newUsers:
-        body += '##' + "u/" + user + '\n'
+        body += '####' + "u/" + user + '\n'  # Rank: ' + users[user]["rank"]
     body += '#\n---------------------\nUsers removed:\n'
     for user in fallenList:
-        body += '##' + "u/" + user + '\n'
-    body += "\n---------------------\n\n\n##Why am I here?\nYou have been chosen by the algorithm.\n##How do I get out"\
-            + "\nWait. You'll be kicked due to inactivity.\n\n##If\nyou do not post or comment on any post made "\
-            + "beginning bg this recap, till next recap. \nEach " + str(constant.INTOLERANCY_RATE)\
+        body += '####' + "u/" + user + '\n'  # Rank: ' + users[user]["rank"]
+    body += "\n---------------------\n\n\n##Why am I here?\nYou have been chosen by the algorithm.\n##How do I get out" \
+            + "\nWait. You'll be kicked due to inactivity.\n\n##If\nyou do not post or comment on any post made " \
+            + "beginning by this recap, till next recap. \nEach " + str(constant.INTOLERANCY_RATE) \
             + " weeks you stay, you gain 1 more chance."
 
     sub = reddit.subreddit(constant.TARGET_SUBREDDIT)
@@ -48,6 +58,7 @@ Anything over this comment, I did not modify the codes functionality.
 
 
 def adjust_ranks(subreddit, users):
+    print("adjust_ranks")
     # I think we may use a different Ranking algorithm.
     for user in users:
         users[user]["activityPoint"] += 1
@@ -61,6 +72,7 @@ def adjust_ranks(subreddit, users):
 # LAST RECAP. We may want to use a different randomly adding algorithm. But this one has the advantage of not operating
 # according to time but only to last recap.
 def remove_fallen(subreddit, users):
+    print("remove_fallen")
     actives = []
     fallen = dict()
     file = open(r"last_post_id.txt", "r")
@@ -101,14 +113,32 @@ def remove_fallen(subreddit, users):
 
 
 def add_users(reddit):
+    print("add_users")
     news = dict()
     # I think we may use a different randomly adding algorithm.
-    for submission in reddit.subreddit("Turkey").hot(limit=constant.ADD_PERR_RECAP):
-        for top_level_comment in submission.comments:
-            reddit.subreddit(constant.TARGET_SUBREDDIT).contributor.add(top_level_comment.author.name)
-            news[top_level_comment.author.name] = {
-                "rank": constant.RANK_NAMES[0],
-                "activityPoint": 0
-            }
-            break;
+    dont_add = read_do_not_add_list()
+    for submission in reddit.subreddit("Morocco").hot(limit=constant.ADD_PERR_RECAP):
+        try:
+            for top_level_comment in submission.comments:
+                new = top_level_comment.author.name
+                if new not in dont_add:
+                    reddit.subreddit(constant.TARGET_SUBREDDIT).contributor.add(new)
+                    news[new] = {
+                        "rank": constant.RANK_NAMES[0],
+                        "activityPoint": 0
+                    }
+                    dont_add[new] = {
+                        "rank": constant.RANK_NAMES[0],
+                        "activityPoint": 0
+                    }
+                else:
+                    print("Did not add: u/" + new)
+                break;
+        except AttributeError:
+            print("AttributeError at botUtils.add_users()")
+
+    with open('do_not_add_again.json', 'w') as outfile:
+        json.dump(dont_add, outfile)
+    outfile.close()
+
     return news
