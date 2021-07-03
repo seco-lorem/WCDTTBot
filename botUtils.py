@@ -68,6 +68,12 @@ def adjust_ranks(subreddit, users):
             users[user]["rank"] = constant.RANK_NAMES[2]
 
 
+def get_comment_tree(comment, authors):
+    authors.append(comment.author.name)
+    for reply in comment.replies:
+        get_comment_tree(reply, authors)
+
+
 # DOES NOT COUNT THE COMMENTS TO OLDER POSTS. IN OTHER WORDS, YOU MAY BE KICKED EVEN IF YOU COMMENT ON A POST PRIOR TO
 # LAST RECAP. We may want to use a different randomly adding algorithm. But this one has the advantage of not operating
 # according to time but only to last recap.
@@ -87,8 +93,10 @@ def remove_fallen(subreddit, users):
             file1.close()
 
         actives.append(submission.author.name)
+        submission.comments.replace_more(limit=None)
         for comment in submission.comments:
-            actives.append(submission.author.name)
+            get_comment_tree(comment, actives)
+        
         if submission.id == last_post_id:
             break
         first_iteration = False
