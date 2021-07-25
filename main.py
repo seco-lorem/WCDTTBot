@@ -20,6 +20,7 @@ def recap():
 
     generate_recap_post(news, fallen, reddit)
     update_users(users, news, fallen)
+    add_flairs(reddit, users)
 
 
 '''
