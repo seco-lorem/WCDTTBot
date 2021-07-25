@@ -115,7 +115,10 @@ def remove_fallen(subreddit, users):
                     "rank": users[user]["rank"],
                     "activityPoint": users[user]["activityPoint"]
                 }
-                subreddit.contributor.remove(user)
+                try:
+                    subreddit.contributor.remove(user)
+                except BaseException as e:
+                    print("Could not remove: " + user + ". " + str(e))
 
     return fallen
 
@@ -150,3 +153,8 @@ def add_users(reddit):
     outfile.close()
 
     return news
+
+
+def add_flairs(reddit, users):
+    for user in users:
+        reddit.subreddit(constant.TARGET_SUBREDDIT).flair.set(user, users[user]["rank"])
