@@ -1,5 +1,5 @@
 
-TARGET_SUBREDDIT = ""
+TARGET_SUBREDDIT = ""                       # The Private subreddit
 
 CLIENT_ID       = ""
 CLIENT_SECRET   = ""
